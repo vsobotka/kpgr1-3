@@ -1,0 +1,8 @@
+OK - Solid - vb, ib
+OK - Modelovací transformace (model) = model space -> world space
+OK - Pohledová tranformace (view) = world space -> view space
+- Projekční tranformace (projection) = view space -> clip space
+- Ořezání
+- Dehomogenizace - x, y, z, w = x/w, y/w, z/w, w/w = NDC
+- Transformace do okna obrazovky = NDC -> screen space
+OK - Rasterizace
