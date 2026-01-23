@@ -31,8 +31,6 @@ public class Renderer {
             pointA = pointA.mul(solid.getModel());
             pointB = pointB.mul(solid.getModel());
 
-//            pointA = pointA.mul(solid.getModel()).mul(view).mul(proj);
-
             // Pohledová tranformace (view) = world space -> view space
             pointA = pointA.mul(view);
             pointB = pointB.mul(view);
