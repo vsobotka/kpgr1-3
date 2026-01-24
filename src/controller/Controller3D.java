@@ -4,12 +4,12 @@ import rasterize.LineRasterizer;
 import rasterize.LineRasterizerGraphics;
 import renderer.Renderer;
 import solid.*;
-import transforms.Camera;
-import transforms.Mat4;
-import transforms.Mat4PerspRH;
-import transforms.Vec3D;
+import transforms.*;
 import view.Panel;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -26,7 +26,10 @@ public class Controller3D {
     private Solid axisZ = new AxisZ();
 
     private Camera camera;
-    private Mat4 proj;
+    private Mat4 perspProj;
+    private Mat4 orthoProj;
+
+    private Projection projection = Projection.PERSPECTIVE;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
@@ -39,11 +42,20 @@ public class Controller3D {
                 .withZenith(Math.toRadians(-15)) // - -> look down, + -> look up
                 .withFirstPerson(true);
 
-        proj = new Mat4PerspRH(
-                Math.toRadians(70),
+        double fov = Math.toRadians(70);
+
+        perspProj = new Mat4PerspRH(
+                fov,
                 panel.getRaster().getHeight() / (double) panel.getRaster().getWidth(),
                 0.1,
                 100
+        );
+
+        double h = 6 * Math.tan(fov / 2);
+        double w = h * panel.getRaster().getWidth() / (double) panel.getRaster().getHeight();
+
+        orthoProj = new Mat4OrthoRH(
+            w, h, 0.1, 100
         );
 
         renderer = new Renderer(
@@ -51,11 +63,10 @@ public class Controller3D {
                 panel.getRaster().getWidth(),
                 panel.getRaster().getHeight(),
                 camera.getViewMatrix(),
-                proj
+                projection == Projection.PERSPECTIVE ? perspProj : orthoProj
         );
 
         initListeners();
-
         drawScene();
     }
 
@@ -73,6 +84,27 @@ public class Controller3D {
 
             }
         });
+
+        panel.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_P) {
+                    projection = projection == Projection.PERSPECTIVE ? Projection.ORTHOGRAPHIC : Projection.PERSPECTIVE;
+                    renderer.setProj(projection == Projection.PERSPECTIVE ? perspProj : orthoProj);
+                    drawScene();
+                }
+            }
+        });
     }
 
     private void drawScene() {
@@ -84,6 +116,22 @@ public class Controller3D {
 
         renderer.renderSolid(cube);
 
+        renderUI();
+
         panel.repaint();
+    }
+
+    private void renderUI() {
+        Graphics g = panel.getRaster().getImage().getGraphics();
+
+        g.setColor(Color.WHITE);
+        g.drawString("[P] Projection: " + this.projection, 10, 20);
+
+        g.dispose();
+    }
+
+    private enum Projection {
+        ORTHOGRAPHIC,
+        PERSPECTIVE
     }
 }
