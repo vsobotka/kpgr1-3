@@ -31,16 +31,16 @@ public class Controller3D {
 
     private Projection projection = Projection.PERSPECTIVE;
 
+    private int azimuth = 110;
+    private int zenith = -15;
+    private int lastX, lastY;
+
     public Controller3D(Panel panel) {
         this.panel = panel;
 
         lineRasterizer = new LineRasterizerGraphics(panel.getRaster());
 
-        camera = new Camera()
-                .withPosition(new Vec3D(1.5, -2.5, 1.5))
-                .withAzimuth(Math.toRadians(110)) // - -> look right, + -> look left
-                .withZenith(Math.toRadians(-15)) // - -> look down, + -> look up
-                .withFirstPerson(true);
+        camera = createCamera();
 
         double fov = Math.toRadians(70);
 
@@ -74,14 +74,25 @@ public class Controller3D {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-
+                lastX = e.getX();
+                lastY = e.getY();
             }
         });
 
         panel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
+                int dx = e.getX() - lastX;
+                int dy = e.getY() - lastY;
 
+                azimuth += dx;
+                zenith -= dy;
+
+                lastX = e.getX();
+                lastY = e.getY();
+
+                renderer.setView(createCamera().getViewMatrix());
+                drawScene();
             }
         });
 
@@ -126,6 +137,7 @@ public class Controller3D {
 
         g.setColor(Color.WHITE);
         g.drawString("[P] Projection: " + this.projection, 10, 20);
+        g.drawString("Drag mouse to move camera", 10, 200);
 
         g.dispose();
     }
@@ -133,5 +145,13 @@ public class Controller3D {
     private enum Projection {
         ORTHOGRAPHIC,
         PERSPECTIVE
+    }
+
+    private Camera createCamera() {
+        return new Camera()
+                .withPosition(new Vec3D(1.5, -2.5, 1.5))
+                .withAzimuth(Math.toRadians(azimuth)) // - -> look right, + -> look left
+                .withZenith(Math.toRadians(zenith)) // - -> look down, + -> look up
+                .withFirstPerson(true);
     }
 }
