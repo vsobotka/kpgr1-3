@@ -34,6 +34,7 @@ public class Controller3D {
     private int lastX, lastY;
 
     private final double cameraSpeed = 0.1;
+    private final double mouseSensitivity = 0.01;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
@@ -85,9 +86,8 @@ public class Controller3D {
                 int dx = e.getX() - lastX;
                 int dy = e.getY() - lastY;
 
-                double sensitivity = 0.01;
-                camera = camera.addAzimuth(-dx * sensitivity)
-                            .addZenith(-dy * sensitivity);
+                camera = camera.addAzimuth(-dx * mouseSensitivity)
+                            .addZenith(-dy * mouseSensitivity);
 
                 lastX = e.getX();
                 lastY = e.getY();
