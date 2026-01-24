@@ -56,7 +56,8 @@ public class Renderer {
                     (int) Math.round(vecA.getX()),
                     (int) Math.round(vecA.getY()),
                     (int) Math.round(vecB.getX()),
-                    (int) Math.round(vecB.getY())
+                    (int) Math.round(vecB.getY()),
+                    solid.getColor()
             );
         }
     }

@@ -9,8 +9,10 @@ import rasterize.LineRasterizer;
 import rasterize.LineRasterizerGraphics;
 import rasterize.LineRasterizerTrivial;
 import rasterize.PolygonRasterizer;
+import transforms.Col;
 import view.Panel;
 
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -72,7 +74,7 @@ public class Controller2D {
 
         // tady budeme rasterizovat
         if (line != null)
-            lineRasterizer.rasterize(line);
+            lineRasterizer.rasterize(line, new Col(0xff0000));
 
         polygonRasterizer.rasterize(polygon);
 

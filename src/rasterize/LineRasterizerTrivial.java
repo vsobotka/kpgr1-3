@@ -2,6 +2,7 @@ package rasterize;
 
 import model.Line;
 import raster.RasterBufferedImage;
+import transforms.Col;
 
 import java.awt.*;
 
@@ -12,7 +13,7 @@ public class LineRasterizerTrivial extends LineRasterizer {
 
 
     @Override
-    public void rasterize(int x1, int y1, int x2, int y2) {
+    public void rasterize(int x1, int y1, int x2, int y2, Col color) {
         // y = kx + q
         float k = (y2 - y1) / (float) (x2 - x1);
         float q = y1 - k * x1;
@@ -23,7 +24,7 @@ public class LineRasterizerTrivial extends LineRasterizer {
 
         for(int x = x1; x <= x2; x++) {
             float y = k * x + q;
-            raster.setPixel(x, Math.round(y), 0xff0000);
+            raster.setPixel(x, Math.round(y), color.getRGB());
         }
     }
 }

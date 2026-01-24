@@ -3,6 +3,9 @@ package rasterize;
 import model.Line;
 import model.Point;
 import model.Polygon;
+import transforms.Col;
+
+import java.awt.*;
 
 public class PolygonRasterizer {
     private LineRasterizer lineRasterizer;
@@ -24,7 +27,7 @@ public class PolygonRasterizer {
             Point pA = polygon.getPoint(indexA);
             Point pB = polygon.getPoint(indexB);
 
-            lineRasterizer.rasterize(new Line(pA, pB));
+            lineRasterizer.rasterize(new Line(pA, pB), new Col(0xff0000));
         }
     }
 }
