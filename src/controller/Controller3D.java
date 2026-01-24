@@ -33,9 +33,9 @@ public class Controller3D {
         lineRasterizer = new LineRasterizerGraphics(panel.getRaster());
 
         camera = new Camera()
-                .withPosition(new Vec3D(0.5, -2, 1))
-                .withAzimuth(Math.toRadians(90))
-                .withZenith(Math.toRadians(-15))
+                .withPosition(new Vec3D(1.5, -2.5, 1.5))
+                .withAzimuth(Math.toRadians(110)) // - -> look right, + -> look left
+                .withZenith(Math.toRadians(-15)) // - -> look down, + -> look up
                 .withFirstPerson(true);
 
         proj = new Mat4PerspRH(
