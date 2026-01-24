@@ -40,16 +40,7 @@ public class Renderer {
             pointB = pointB.mul(proj);
 
             // clip
-            if (
-                (pointA.getX() < -pointA.getW() && pointB.getX() < -pointB.getW()) ||
-                (pointA.getX() > pointA.getW() && pointB.getX() > pointB.getW()) ||
-
-                (pointA.getY() < -pointA.getW() && pointB.getY() < -pointB.getW()) ||
-                (pointA.getY() > pointA.getW() && pointB.getY() > pointB.getW()) ||
-
-                (pointA.getZ() < 0 && pointB.getZ() < 0) ||
-                (pointA.getZ() > pointA.getW() && pointB.getZ() > pointB.getW())
-            ) continue;
+            if (!isInClipSpace(pointA) || !isInClipSpace(pointB)) continue;
 
             // NDC
             if (pointA.getW() != 0 && pointB.getW() != 0) {
@@ -82,5 +73,12 @@ public class Renderer {
 
     public void setProj(Mat4 proj) {
         this.proj = proj;
+    }
+
+    private boolean isInClipSpace(Point3D p) {
+        double w = p.getW();
+        return p.getX() >= -w && p.getX() <= w &&
+                p.getY() >= -w && p.getY() <= w &&
+                p.getZ() >= 0  && p.getZ() <= w;
     }
 }
