@@ -39,7 +39,17 @@ public class Renderer {
             pointA = pointA.mul(proj);
             pointB = pointB.mul(proj);
 
-            // TODO: Ořezání - slide 88
+            // Ořezání
+            if (
+                (pointA.getX() < -pointA.getW() && pointB.getX() < -pointB.getW()) ||
+                (pointA.getX() > pointA.getW() && pointB.getX() > pointB.getW()) ||
+
+                (pointA.getY() < -pointA.getW() && pointB.getY() < -pointB.getW()) ||
+                (pointA.getY() > pointA.getW() && pointB.getY() > pointB.getW()) ||
+
+                (pointA.getZ() < 0 && pointB.getZ() < 0) ||
+                (pointA.getZ() > pointA.getW() && pointB.getZ() > pointB.getW())
+            ) continue;
 
             // TODO: Dehomogenizace - x, y, z, w = x/w, y/w, z/w, w/w = NDC
             // pouzor raději ošetřit dělení nulou
