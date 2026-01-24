@@ -39,7 +39,7 @@ public class Renderer {
             pointA = pointA.mul(proj);
             pointB = pointB.mul(proj);
 
-            // Ořezání
+            // clip
             if (
                 (pointA.getX() < -pointA.getW() && pointB.getX() < -pointB.getW()) ||
                 (pointA.getX() > pointA.getW() && pointB.getX() > pointB.getW()) ||
@@ -51,10 +51,11 @@ public class Renderer {
                 (pointA.getZ() > pointA.getW() && pointB.getZ() > pointB.getW())
             ) continue;
 
-            // TODO: Dehomogenizace - x, y, z, w = x/w, y/w, z/w, w/w = NDC
-            // pouzor raději ošetřit dělení nulou
-            pointA = pointA.mul(1 / pointA.getW());
-            pointB = pointB.mul(1 / pointB.getW());
+            // NDC
+            if (pointA.getW() != 0 && pointB.getW() != 0) {
+                pointA = pointA.mul(1 / pointA.getW());
+                pointB = pointB.mul(1 / pointB.getW());
+            }
 
             // Transformace do okna obrazovky = NDC -> screen space
             Vec3D vecA = transformToWindow(pointA);
