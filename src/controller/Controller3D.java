@@ -26,14 +26,14 @@ public class Controller3D {
     private Solid axisZ = new AxisZ();
 
     private Camera camera;
-    private Mat4 perspProj;
-    private Mat4 orthoProj;
+    private final Mat4 perspProj;
+    private final Mat4 orthoProj;
 
     private Projection projection = Projection.PERSPECTIVE;
 
-    private int azimuth = 110;
-    private int zenith = -15;
     private int lastX, lastY;
+
+    private final double cameraSpeed = 0.1;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
@@ -85,13 +85,14 @@ public class Controller3D {
                 int dx = e.getX() - lastX;
                 int dy = e.getY() - lastY;
 
-                azimuth += dx;
-                zenith -= dy;
+                double sensitivity = 0.01;
+                camera = camera.addAzimuth(-dx * sensitivity)
+                            .addZenith(-dy * sensitivity);
 
                 lastX = e.getX();
                 lastY = e.getY();
 
-                renderer.setView(createCamera().getViewMatrix());
+                renderer.setView(camera.getViewMatrix());
                 drawScene();
             }
         });
@@ -104,16 +105,33 @@ public class Controller3D {
 
             @Override
             public void keyPressed(KeyEvent e) {
+                boolean requiresCameraUpdate = false;
+                boolean shouldDrawScene = false;
 
+                if (e.getKeyCode() == KeyEvent.VK_P) {
+                    projection = projection == Projection.PERSPECTIVE ? Projection.ORTHOGRAPHIC : Projection.PERSPECTIVE;
+                    renderer.setProj(projection == Projection.PERSPECTIVE ? perspProj : orthoProj);
+                    shouldDrawScene = true;
+                } else if (e.getKeyCode() == KeyEvent.VK_W) {
+                    camera = camera.forward(cameraSpeed);
+                    requiresCameraUpdate = true;
+                } else if (e.getKeyCode() == KeyEvent.VK_S) {
+                    camera = camera.backward(cameraSpeed);
+                    requiresCameraUpdate = true;
+                } else if (e.getKeyCode() == KeyEvent.VK_A) {
+                    camera = camera.left(cameraSpeed);
+                    requiresCameraUpdate = true;
+                } else if (e.getKeyCode() == KeyEvent.VK_D) {
+                    camera = camera.right(cameraSpeed);
+                    requiresCameraUpdate = true;
+                }
+
+                if (requiresCameraUpdate) renderer.setView(camera.getViewMatrix());
+                if (shouldDrawScene || requiresCameraUpdate) drawScene();
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_P) {
-                    projection = projection == Projection.PERSPECTIVE ? Projection.ORTHOGRAPHIC : Projection.PERSPECTIVE;
-                    renderer.setProj(projection == Projection.PERSPECTIVE ? perspProj : orthoProj);
-                    drawScene();
-                }
             }
         });
     }
@@ -137,7 +155,8 @@ public class Controller3D {
 
         g.setColor(Color.WHITE);
         g.drawString("[P] Projection: " + this.projection, 10, 20);
-        g.drawString("Drag mouse to move camera", 10, 200);
+        g.drawString("[WASD] Camera position", 10, 180);
+        g.drawString("[drag] Camera direction", 10, 200);
 
         g.dispose();
     }
@@ -150,8 +169,8 @@ public class Controller3D {
     private Camera createCamera() {
         return new Camera()
                 .withPosition(new Vec3D(1.5, -2.5, 1.5))
-                .withAzimuth(Math.toRadians(azimuth)) // - -> look right, + -> look left
-                .withZenith(Math.toRadians(zenith)) // - -> look down, + -> look up
+                .withAzimuth(Math.toRadians(110)) // - -> look right, + -> look left
+                .withZenith(Math.toRadians(-15)) // - -> look down, + -> look up
                 .withFirstPerson(true);
     }
 }
