@@ -19,7 +19,8 @@ public class Controller3D {
     private Renderer renderer;
 
     // Solids
-    private Solid arrow = new Arrow();
+    //private Solid arrow = new Arrow();
+    private Solid cube = new Cube();
     private Solid axisX = new AxisX();
     private Solid axisY = new AxisY();
     private Solid axisZ = new AxisZ();
@@ -81,7 +82,7 @@ public class Controller3D {
         renderer.renderSolid(axisY);
         renderer.renderSolid(axisZ);
 
-        renderer.renderSolid(arrow);
+        renderer.renderSolid(cube);
 
         panel.repaint();
     }
