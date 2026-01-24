@@ -33,13 +33,13 @@ public class Controller3D {
         lineRasterizer = new LineRasterizerGraphics(panel.getRaster());
 
         camera = new Camera()
-                .withPosition(new Vec3D(0.5, -1.5, 1.5))
+                .withPosition(new Vec3D(0.5, -2, 1))
                 .withAzimuth(Math.toRadians(90))
-                .withZenith(Math.toRadians(-25))
+                .withZenith(Math.toRadians(-15))
                 .withFirstPerson(true);
 
         proj = new Mat4PerspRH(
-                Math.toRadians(90),
+                Math.toRadians(70),
                 panel.getRaster().getHeight() / (double) panel.getRaster().getWidth(),
                 0.1,
                 100
