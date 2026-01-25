@@ -93,7 +93,11 @@ public class Controller3D {
                 lastY = e.getY();
 
                 if (isShiftPressed) {
-                    moveObject(cube, dx * movementSensitivity, -dy * movementSensitivity);
+                    if (e.getButton() == MouseEvent.BUTTON1) {
+                        moveObject(cube, dx * mouseSensitivity, -dy * mouseSensitivity);
+                    } else if (e.getButton() == MouseEvent.BUTTON3) {
+                        rotateObject(cube, dx * mouseSensitivity, dy * mouseSensitivity);
+                    }
                 } else {
                     camera = camera.addAzimuth(-dx * mouseSensitivity)
                                 .addZenith(-dy * mouseSensitivity);
@@ -218,5 +222,15 @@ public class Controller3D {
             case Z -> new Mat4Transl(dx, dy, 0);
         };
         solid.setModel(solid.getModel().mul(translation));
+    }
+
+    private void rotateObject(Solid solid, double dx, double dy) {
+        Axis aligned = getMostAlignedAxis();
+        Mat4 rotation = switch (aligned) {
+            case X -> new Mat4RotZ(dx).mul(new Mat4RotY(dy));
+            case Y -> new Mat4RotX(dy).mul(new Mat4RotZ(dx));
+            case Z -> new Mat4RotX(dy).mul(new Mat4RotY(dx));
+            };
+        solid.setModel(rotation.mul(solid.getModel()));
     }
 }
