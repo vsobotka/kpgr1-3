@@ -34,8 +34,8 @@ public class Controller3D {
     private int lastX, lastY;
 
     private final double cameraSpeed = 0.1;
+    private final double cameraRotationSpeed = 0.005;
     private final double mouseSensitivity = 0.01;
-    private final double movementSensitivity = 0.01;
 
     private boolean isShiftPressed = false;
 
@@ -99,10 +99,7 @@ public class Controller3D {
                         rotateObject(cube, dx * mouseSensitivity, dy * mouseSensitivity);
                     }
                 } else {
-                    camera = camera.addAzimuth(-dx * mouseSensitivity)
-                                .addZenith(-dy * mouseSensitivity);
-
-                    renderer.setView(camera.getViewMatrix());
+                    moveCamera(-dx, -dy);
                 }
                 drawScene();
             }
@@ -212,6 +209,13 @@ public class Controller3D {
         } else {
             return Axis.Z;
         }
+    }
+
+    private void moveCamera(double dx, double dy) {
+        camera = camera.addAzimuth(-dx * cameraRotationSpeed)
+                .addZenith(-dy * cameraRotationSpeed);
+
+        renderer.setView(camera.getViewMatrix());
     }
 
     private void moveObject(Solid solid, double dx, double dy) {
