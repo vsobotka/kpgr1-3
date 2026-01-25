@@ -36,6 +36,8 @@ public class Controller3D {
     private final double cameraSpeed = 0.1;
     private final double cameraRotationSpeed = 0.005;
     private final double mouseSensitivity = 0.01;
+    private final double scaleUpFactor = 1.05;
+    private final double scaleDownFactor = 0.95;
 
     private boolean isShiftPressed = false;
 
@@ -134,6 +136,12 @@ public class Controller3D {
                     requiresCameraUpdate = true;
                 } else if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     isShiftPressed = true;
+                    shouldDrawScene = true;
+                } else if (isShiftPressed && e.getKeyCode() == KeyEvent.VK_UP) {
+                    scaleObject(cube, scaleUpFactor);
+                    shouldDrawScene = true;
+                } else if (isShiftPressed && e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    scaleObject(cube, scaleDownFactor);
                     shouldDrawScene = true;
                 }
 
@@ -236,5 +244,9 @@ public class Controller3D {
             case Z -> new Mat4RotX(dy).mul(new Mat4RotY(dx));
             };
         solid.setModel(rotation.mul(solid.getModel()));
+    }
+
+    private void scaleObject(Solid solid, double change) {
+        solid.setModel(solid.getModel().mul(new Mat4Scale(change)));
     }
 }
