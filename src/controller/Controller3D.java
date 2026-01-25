@@ -35,6 +35,9 @@ public class Controller3D {
 
     private final double cameraSpeed = 0.1;
     private final double mouseSensitivity = 0.01;
+    private final double movementSensitivity = 0.01;
+
+    private boolean isShiftPressed = false;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
@@ -86,13 +89,17 @@ public class Controller3D {
                 int dx = e.getX() - lastX;
                 int dy = e.getY() - lastY;
 
-                camera = camera.addAzimuth(-dx * mouseSensitivity)
-                            .addZenith(-dy * mouseSensitivity);
-
                 lastX = e.getX();
                 lastY = e.getY();
 
-                renderer.setView(camera.getViewMatrix());
+                if (isShiftPressed) {
+                    moveObject(cube, dx * movementSensitivity, -dy * movementSensitivity);
+                } else {
+                    camera = camera.addAzimuth(-dx * mouseSensitivity)
+                                .addZenith(-dy * mouseSensitivity);
+
+                    renderer.setView(camera.getViewMatrix());
+                }
                 drawScene();
             }
         });
@@ -124,6 +131,9 @@ public class Controller3D {
                 } else if (e.getKeyCode() == KeyEvent.VK_D) {
                     camera = camera.right(cameraSpeed);
                     requiresCameraUpdate = true;
+                } else if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    isShiftPressed = true;
+                    shouldDrawScene = true;
                 }
 
                 if (requiresCameraUpdate) renderer.setView(camera.getViewMatrix());
@@ -132,6 +142,10 @@ public class Controller3D {
 
             @Override
             public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    isShiftPressed = false;
+                    drawScene();
+                }
             }
         });
     }
@@ -155,6 +169,7 @@ public class Controller3D {
 
         g.setColor(Color.WHITE);
         g.drawString("[P] Projection: " + this.projection, 10, 20);
+        g.drawString("[Shift + drag] Move solid: " + this.isShiftPressed, 10, 40);
         g.drawString("[WASD] Camera position", 10, 180);
         g.drawString("[drag] Camera direction", 10, 200);
 
@@ -166,11 +181,42 @@ public class Controller3D {
         PERSPECTIVE
     }
 
+    private enum Axis {
+        X, Y, Z
+    }
+
     private Camera createCamera() {
         return new Camera()
                 .withPosition(new Vec3D(1.5, -2.5, 1.5))
                 .withAzimuth(Math.toRadians(110)) // - -> look right, + -> look left
                 .withZenith(Math.toRadians(-15)) // - -> look down, + -> look up
                 .withFirstPerson(true);
+    }
+
+    // Finds Math.max(|x|, |y|, |z|) axis => axis most aligned with the camera view vector
+    private Axis getMostAlignedAxis() {
+        Vec3D view = camera.getViewVector();
+
+        double dotX = Math.abs(view.getX());
+        double dotY = Math.abs(view.getY());
+        double dotZ = Math.abs(view.getZ());
+
+        if (dotX >= dotY && dotX >= dotZ) {
+            return Axis.X;
+        } else if (dotY >= dotX && dotY >= dotZ) {
+            return Axis.Y;
+        } else {
+            return Axis.Z;
+        }
+    }
+
+    private void moveObject(Solid solid, double dx, double dy) {
+        Axis aligned = getMostAlignedAxis();
+        Mat4 translation = switch (aligned) {
+            case X -> new Mat4Transl(0, dx, dy);
+            case Y -> new Mat4Transl(dx, 0, dy);
+            case Z -> new Mat4Transl(dx, dy, 0);
+        };
+        solid.setModel(solid.getModel().mul(translation));
     }
 }
