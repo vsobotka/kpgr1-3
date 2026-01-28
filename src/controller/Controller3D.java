@@ -178,7 +178,10 @@ public class Controller3D {
 
         g.setColor(Color.WHITE);
         g.drawString("[P] Projection: " + this.projection, 10, 20);
-        g.drawString("[Shift + drag] Move solid: " + this.isShiftPressed, 10, 40);
+        g.drawString("[Shift + lmb] Move solid", 10, 40);
+        g.drawString("[Shift + rmb] Rotate solid", 10, 60);
+        g.drawString("[Shift + up/down] Scale solid", 10, 80);
+
         g.drawString("[WASD] Camera position", 10, 180);
         g.drawString("[drag] Camera direction", 10, 200);
 
