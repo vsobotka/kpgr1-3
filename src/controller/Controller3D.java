@@ -7,6 +7,7 @@ import solid.*;
 import transforms.*;
 import view.Panel;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -17,6 +18,8 @@ public class Controller3D {
     private final Panel panel;
     private LineRasterizer lineRasterizer;
     private Renderer renderer;
+
+    private Timer timer;
 
     // Solids
     //private Solid arrow = new Arrow();
@@ -41,6 +44,7 @@ public class Controller3D {
     private final double scaleDownFactor = 0.95;
 
     private boolean isShiftPressed = false;
+    private boolean isAnimationRunning = false;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
@@ -72,6 +76,13 @@ public class Controller3D {
                 camera.getViewMatrix(),
                 projection == Projection.PERSPECTIVE ? perspProj : orthoProj
         );
+
+        // delay 16ms is roughly 60 fps
+        timer = new Timer(16, e -> {
+            rotateObject(dodecahedron, 0.005, 0.005);
+            rotateObject(cube, 0.01, -0.003);
+            drawScene();
+        });
 
         initListeners();
         drawScene();
@@ -148,6 +159,15 @@ public class Controller3D {
                     scaleObject(cube, scaleDownFactor);
                     scaleObject(dodecahedron, scaleDownFactor);
                     shouldDrawScene = true;
+                } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    if (isAnimationRunning) {
+                        timer.stop();
+                        shouldDrawScene = true; // not needed for scene, only UI
+                    } else {
+                        timer.start();
+                    }
+
+                    isAnimationRunning = !isAnimationRunning;
                 }
 
                 if (requiresCameraUpdate) renderer.setView(camera.getViewMatrix());
@@ -187,6 +207,7 @@ public class Controller3D {
         g.drawString("[Shift + lmb] Move solid", 10, 40);
         g.drawString("[Shift + rmb] Rotate solid", 10, 60);
         g.drawString("[Shift + up/down] Scale solid", 10, 80);
+        g.drawString("[Space] Animation: " + this.isAnimationRunning, 10, 100);
 
         g.drawString("[WASD] Camera position", 10, 180);
         g.drawString("[drag] Camera direction", 10, 200);
