@@ -31,11 +31,11 @@ public class Renderer {
             pointA = pointA.mul(solid.getModel());
             pointB = pointB.mul(solid.getModel());
 
-            // Pohledová tranformace (view) = world space -> view space
+            // Pohledová transformace (view) = world space -> view space
             pointA = pointA.mul(view);
             pointB = pointB.mul(view);
 
-            // Projekční tranformace (projection) = view space -> clip space
+            // Projekční transformace (projection) = view space -> clip space
             pointA = pointA.mul(proj);
             pointB = pointB.mul(proj);
 

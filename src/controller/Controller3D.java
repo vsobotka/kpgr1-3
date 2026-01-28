@@ -21,6 +21,7 @@ public class Controller3D {
     // Solids
     //private Solid arrow = new Arrow();
     private Solid cube = new Cube();
+    private Solid dodecahedron = new Dodecahedron();
     private Solid axisX = new AxisX();
     private Solid axisY = new AxisY();
     private Solid axisZ = new AxisZ();
@@ -97,8 +98,10 @@ public class Controller3D {
                 if (isShiftPressed) {
                     if (e.getButton() == MouseEvent.BUTTON1) {
                         moveObject(cube, dx * mouseSensitivity, -dy * mouseSensitivity);
+                        moveObject(dodecahedron, dx * mouseSensitivity, -dy * mouseSensitivity);
                     } else if (e.getButton() == MouseEvent.BUTTON3) {
                         rotateObject(cube, dx * mouseSensitivity, dy * mouseSensitivity);
+                        rotateObject(dodecahedron, dx * mouseSensitivity, dy * mouseSensitivity);
                     }
                 } else {
                     moveCamera(-dx, -dy);
@@ -139,9 +142,11 @@ public class Controller3D {
                     shouldDrawScene = true;
                 } else if (isShiftPressed && e.getKeyCode() == KeyEvent.VK_UP) {
                     scaleObject(cube, scaleUpFactor);
+                    scaleObject(dodecahedron, scaleUpFactor);
                     shouldDrawScene = true;
                 } else if (isShiftPressed && e.getKeyCode() == KeyEvent.VK_DOWN) {
                     scaleObject(cube, scaleDownFactor);
+                    scaleObject(dodecahedron, scaleDownFactor);
                     shouldDrawScene = true;
                 }
 
@@ -167,6 +172,7 @@ public class Controller3D {
         renderer.renderSolid(axisZ);
 
         renderer.renderSolid(cube);
+        renderer.renderSolid(dodecahedron);
 
         renderUI();
 
