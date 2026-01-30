@@ -1,9 +1,14 @@
 package solid;
 
+import transforms.Col;
 import transforms.Point3D;
+
+import java.awt.*;
 
 public class Cube extends Solid {
     public Cube() {
+        color = new Col(Color.YELLOW.getRGB());
+
         vb.add(new Point3D(-0.5, -0.5, -0.5));
         vb.add(new Point3D(0.5, -0.5, -0.5));
         vb.add(new Point3D(0.5, -0.5, 0.5));

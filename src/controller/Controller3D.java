@@ -26,6 +26,7 @@ public class Controller3D {
     //private Solid arrow = new Arrow();
     private Solid cube = new Cube();
     private Solid dodecahedron = new Dodecahedron();
+    private Solid pentagonalPrism = new PentagonalPrism();
     private Solid axisX = new AxisX();
     private Solid axisY = new AxisY();
     private Solid axisZ = new AxisZ();
@@ -111,6 +112,7 @@ public class Controller3D {
 
         solids.add(cube);
         solids.add(dodecahedron);
+        solids.add(pentagonalPrism);
 
         initListeners();
         drawScene();
