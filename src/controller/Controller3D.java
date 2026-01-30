@@ -17,19 +17,19 @@ import java.util.ArrayList;
 
 public class Controller3D {
     private final Panel panel;
-    private LineRasterizer lineRasterizer;
-    private Renderer renderer;
+    private final LineRasterizer lineRasterizer;
+    private final Renderer renderer;
 
-    private Timer timer;
+    private final Timer timer;
 
     // Solids
     //private Solid arrow = new Arrow();
-    private Solid cube = new Cube();
-    private Solid dodecahedron = new Dodecahedron();
-    private Solid pentagonalPrism = new PentagonalPrism();
-    private Solid axisX = new AxisX();
-    private Solid axisY = new AxisY();
-    private Solid axisZ = new AxisZ();
+    private final Solid cube = new Cube();
+    private final Solid dodecahedron = new Dodecahedron();
+    private final Solid pentagonalPrism = new PentagonalPrism();
+    private final Solid axisX = new AxisX();
+    private final Solid axisY = new AxisY();
+    private final Solid axisZ = new AxisZ();
 
     private Camera camera;
     private final Mat4 perspProj;
@@ -48,8 +48,8 @@ public class Controller3D {
     private boolean isShiftPressed = false;
     private boolean isAnimationRunning = false;
 
-    private ArrayList<Solid> solids = new ArrayList<>();
-    private ArrayList<Solid> axes = new ArrayList<>();
+    private final ArrayList<Solid> solids = new ArrayList<>();
+    private final ArrayList<Solid> axes = new ArrayList<>();
     private int selectedSolidIndex = -1;
 
     public Controller3D(Panel panel) {
@@ -84,11 +84,10 @@ public class Controller3D {
         );
 
         // delay 16ms is roughly 60 fps
-        timer = new Timer(16, e -> {
+        timer = new Timer(16, _ -> {
             ArrayList<Solid> selectedSolids = getSelectedSolids();
 
-            for (int i = 0; i < selectedSolids.size(); i++) {
-                Solid solid = selectedSolids.get(i);
+            for (Solid solid : selectedSolids) {
                 double dx = -0.003;
                 double dy = -0.007;
 
