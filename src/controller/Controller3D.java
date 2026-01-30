@@ -17,19 +17,9 @@ import java.util.ArrayList;
 
 public class Controller3D {
     private final Panel panel;
-    private final LineRasterizer lineRasterizer;
     private final Renderer renderer;
 
     private final Timer timer;
-
-    // Solids
-    //private Solid arrow = new Arrow();
-    private final Solid cube = new Cube();
-    private final Solid dodecahedron = new Dodecahedron();
-    private final Solid pentagonalPrism = new PentagonalPrism();
-    private final Solid axisX = new AxisX();
-    private final Solid axisY = new AxisY();
-    private final Solid axisZ = new AxisZ();
 
     private Camera camera;
     private final Mat4 perspProj;
@@ -55,7 +45,7 @@ public class Controller3D {
     public Controller3D(Panel panel) {
         this.panel = panel;
 
-        lineRasterizer = new LineRasterizerGraphics(panel.getRaster());
+        LineRasterizer lineRasterizer = new LineRasterizerGraphics(panel.getRaster());
 
         camera = createCamera();
 
@@ -105,13 +95,13 @@ public class Controller3D {
             drawScene();
         });
 
-        axes.add(axisX);
-        axes.add(axisY);
-        axes.add(axisZ);
+        axes.add(new AxisX());
+        axes.add(new AxisY());
+        axes.add(new AxisZ());
 
-        solids.add(cube);
-        solids.add(dodecahedron);
-        solids.add(pentagonalPrism);
+        solids.add(new Cube());
+        solids.add(new Dodecahedron());
+        solids.add(new PentagonalPrism());
 
         initListeners();
         drawScene();
