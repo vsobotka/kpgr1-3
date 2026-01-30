@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class Controller3D {
     private final Panel panel;
@@ -45,6 +46,10 @@ public class Controller3D {
 
     private boolean isShiftPressed = false;
     private boolean isAnimationRunning = false;
+
+    private ArrayList<Solid> solids = new ArrayList<>();
+    private ArrayList<Solid> axes = new ArrayList<>();
+    private int selectedSolidIndex = -1;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
@@ -79,10 +84,33 @@ public class Controller3D {
 
         // delay 16ms is roughly 60 fps
         timer = new Timer(16, e -> {
-            rotateObject(dodecahedron, 0.005, 0.005);
-            rotateObject(cube, 0.01, -0.003);
+            ArrayList<Solid> selectedSolids = getSelectedSolids();
+
+            for (int i = 0; i < selectedSolids.size(); i++) {
+                Solid solid = selectedSolids.get(i);
+                double dx = -0.003;
+                double dy = -0.007;
+
+                if (solid instanceof Cube) {
+                    dx = 0.01;
+                    dy = -0.003;
+                } else if (solid instanceof Dodecahedron) {
+                    dx = 0.005;
+                    dy = 0.005;
+                }
+
+                rotateObject(solid, dx, dy);
+            }
+
             drawScene();
         });
+
+        axes.add(axisX);
+        axes.add(axisY);
+        axes.add(axisZ);
+
+        solids.add(cube);
+        solids.add(dodecahedron);
 
         initListeners();
         drawScene();
@@ -108,15 +136,18 @@ public class Controller3D {
 
                 if (isShiftPressed) {
                     if (e.getButton() == MouseEvent.BUTTON1) {
-                        moveObject(cube, dx * mouseSensitivity, -dy * mouseSensitivity);
-                        moveObject(dodecahedron, dx * mouseSensitivity, -dy * mouseSensitivity);
+                        for (Solid solid : getSelectedSolids()) {
+                            moveObject(solid, dx * mouseSensitivity, -dy * mouseSensitivity);
+                        }
                     } else if (e.getButton() == MouseEvent.BUTTON3) {
-                        rotateObject(cube, dx * mouseSensitivity, dy * mouseSensitivity);
-                        rotateObject(dodecahedron, dx * mouseSensitivity, dy * mouseSensitivity);
+                        for (Solid solid : getSelectedSolids()) {
+                            rotateObject(solid, dx * mouseSensitivity, dy * mouseSensitivity);
+                        }
                     }
                 } else {
                     moveCamera(-dx, -dy);
                 }
+
                 drawScene();
             }
         });
@@ -152,12 +183,14 @@ public class Controller3D {
                     isShiftPressed = true;
                     shouldDrawScene = true;
                 } else if (isShiftPressed && e.getKeyCode() == KeyEvent.VK_UP) {
-                    scaleObject(cube, scaleUpFactor);
-                    scaleObject(dodecahedron, scaleUpFactor);
+                    for (Solid solid : getSelectedSolids()) {
+                        scaleObject(solid, scaleUpFactor);
+                    }
                     shouldDrawScene = true;
                 } else if (isShiftPressed && e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    scaleObject(cube, scaleDownFactor);
-                    scaleObject(dodecahedron, scaleDownFactor);
+                    for (Solid solid : getSelectedSolids()) {
+                        scaleObject(solid, scaleDownFactor);
+                    }
                     shouldDrawScene = true;
                 } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                     if (isAnimationRunning) {
@@ -168,6 +201,9 @@ public class Controller3D {
                     }
 
                     isAnimationRunning = !isAnimationRunning;
+                } else if (e.getKeyCode() == KeyEvent.VK_N) {
+                    selectedSolidIndex = selectedSolidIndex == solids.size() - 1 ? -1 : selectedSolidIndex + 1;
+                    shouldDrawScene = true;
                 }
 
                 if (requiresCameraUpdate) renderer.setView(camera.getViewMatrix());
@@ -187,12 +223,13 @@ public class Controller3D {
     private void drawScene() {
         panel.getRaster().clear();
 
-        renderer.renderSolid(axisX);
-        renderer.renderSolid(axisY);
-        renderer.renderSolid(axisZ);
+        for (Solid axis : axes) {
+            renderer.renderSolid(axis);
+        }
 
-        renderer.renderSolid(cube);
-        renderer.renderSolid(dodecahedron);
+        for (Solid solid : solids) {
+            renderer.renderSolid(solid);
+        }
 
         renderUI();
 
@@ -208,6 +245,7 @@ public class Controller3D {
         g.drawString("[Shift + rmb] Rotate solid", 10, 60);
         g.drawString("[Shift + up/down] Scale solid", 10, 80);
         g.drawString("[Space] Animation: " + this.isAnimationRunning, 10, 100);
+        g.drawString("[N] Select solid: " + getSelectedSolidName(), 10, 120);
 
         g.drawString("[WASD] Camera position", 10, 180);
         g.drawString("[drag] Camera direction", 10, 200);
@@ -278,5 +316,17 @@ public class Controller3D {
 
     private void scaleObject(Solid solid, double change) {
         solid.setModel(solid.getModel().mul(new Mat4Scale(change)));
+    }
+
+    private ArrayList<Solid> getSelectedSolids() {
+        if (selectedSolidIndex >= 0 && selectedSolidIndex < solids.size()) return new ArrayList<>(java.util.List.of(solids.get(selectedSolidIndex)));
+
+        return solids;
+    }
+
+    private String getSelectedSolidName() {
+        if (selectedSolidIndex >= 0 && selectedSolidIndex < solids.size()) return solids.get(selectedSolidIndex).getClass().getSimpleName();
+
+        return "ALL";
     }
 }
