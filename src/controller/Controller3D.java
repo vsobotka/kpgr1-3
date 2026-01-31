@@ -101,11 +101,13 @@ public class Controller3D {
         axes.add(new AxisZ());
 
         Cube cube = new Cube();
+        Dodecahedron dodecahedron = new Dodecahedron();
         solids.add(cube);
-        solids.add(new Dodecahedron());
+        solids.add(dodecahedron);
         solids.add(new PentagonalPrism());
 
         curves.add(new BezierCurve(cube));
+        curves.add(new FergusonCurve(dodecahedron));
 
         initListeners();
         drawScene();
