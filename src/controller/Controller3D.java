@@ -102,12 +102,14 @@ public class Controller3D {
 
         Cube cube = new Cube();
         Dodecahedron dodecahedron = new Dodecahedron();
+        PentagonalPrism pentagonalPrism = new PentagonalPrism();
         solids.add(cube);
         solids.add(dodecahedron);
-        solids.add(new PentagonalPrism());
+        solids.add(pentagonalPrism);
 
         curves.add(new BezierCurve(cube));
         curves.add(new FergusonCurve(dodecahedron));
+        curves.add(new CoonsCurve(pentagonalPrism));
 
         initListeners();
         drawScene();
