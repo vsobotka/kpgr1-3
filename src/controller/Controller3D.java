@@ -1,5 +1,6 @@
 package controller;
 
+import config.Config;
 import rasterize.LineRasterizer;
 import rasterize.LineRasterizerGraphics;
 import renderer.Renderer;
@@ -29,11 +30,6 @@ public class Controller3D {
 
     private int lastX, lastY;
 
-    private final double cameraSpeed = 0.1;
-    private final double cameraRotationSpeed = 0.005;
-    private final double mouseSensitivity = 0.01;
-    private final double scaleUpFactor = 1.05;
-    private final double scaleDownFactor = 0.95;
 
     private boolean isShiftPressed = false;
     private boolean isAnimationRunning = false;
@@ -50,20 +46,20 @@ public class Controller3D {
 
         camera = createCamera();
 
-        double fov = Math.toRadians(70);
+        double fov = Math.toRadians(Config.FOV_DEGREES);
 
         perspProj = new Mat4PerspRH(
                 fov,
                 panel.getRaster().getHeight() / (double) panel.getRaster().getWidth(),
-                0.1,
-                100
+                Config.NEAR_CLIP,
+                Config.FAR_CLIP
         );
 
         double h = 6 * Math.tan(fov / 2);
         double w = h * panel.getRaster().getWidth() / (double) panel.getRaster().getHeight();
 
         orthoProj = new Mat4OrthoRH(
-            w, h, 0.1, 100
+            w, h, Config.NEAR_CLIP, Config.FAR_CLIP
         );
 
         renderer = new Renderer(
@@ -74,8 +70,7 @@ public class Controller3D {
                 projection == Projection.PERSPECTIVE ? perspProj : orthoProj
         );
 
-        // delay 16ms is roughly 60 fps
-        timer = new Timer(16, _ -> {
+        timer = new Timer(Config.ANIMATION_DELAY_MS, _ -> {
             ArrayList<Solid> selectedSolids = getSelectedSolids();
 
             for (Solid solid : selectedSolids) {
@@ -136,11 +131,11 @@ public class Controller3D {
                 if (isShiftPressed) {
                     if (e.getButton() == MouseEvent.BUTTON1) {
                         for (Solid solid : getSelectedSolids()) {
-                            moveObject(solid, dx * mouseSensitivity, -dy * mouseSensitivity);
+                            moveObject(solid, dx * Config.MOUSE_SENSITIVITY, -dy * Config.MOUSE_SENSITIVITY);
                         }
                     } else if (e.getButton() == MouseEvent.BUTTON3) {
                         for (Solid solid : getSelectedSolids()) {
-                            rotateObject(solid, dx * mouseSensitivity, dy * mouseSensitivity);
+                            rotateObject(solid, dx * Config.MOUSE_SENSITIVITY, dy * Config.MOUSE_SENSITIVITY);
                         }
                     }
                 } else {
@@ -167,28 +162,28 @@ public class Controller3D {
                     renderer.setProj(projection == Projection.PERSPECTIVE ? perspProj : orthoProj);
                     shouldDrawScene = true;
                 } else if (e.getKeyCode() == KeyEvent.VK_W) {
-                    camera = camera.forward(cameraSpeed);
+                    camera = camera.forward(Config.CAMERA_SPEED);
                     requiresCameraUpdate = true;
                 } else if (e.getKeyCode() == KeyEvent.VK_S) {
-                    camera = camera.backward(cameraSpeed);
+                    camera = camera.backward(Config.CAMERA_SPEED);
                     requiresCameraUpdate = true;
                 } else if (e.getKeyCode() == KeyEvent.VK_A) {
-                    camera = camera.left(cameraSpeed);
+                    camera = camera.left(Config.CAMERA_SPEED);
                     requiresCameraUpdate = true;
                 } else if (e.getKeyCode() == KeyEvent.VK_D) {
-                    camera = camera.right(cameraSpeed);
+                    camera = camera.right(Config.CAMERA_SPEED);
                     requiresCameraUpdate = true;
                 } else if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     isShiftPressed = true;
                     shouldDrawScene = true;
                 } else if (isShiftPressed && e.getKeyCode() == KeyEvent.VK_UP) {
                     for (Solid solid : getSelectedSolids()) {
-                        scaleObject(solid, scaleUpFactor);
+                        scaleObject(solid, Config.SCALE_UP_FACTOR);
                     }
                     shouldDrawScene = true;
                 } else if (isShiftPressed && e.getKeyCode() == KeyEvent.VK_DOWN) {
                     for (Solid solid : getSelectedSolids()) {
-                        scaleObject(solid, scaleDownFactor);
+                        scaleObject(solid, Config.SCALE_DOWN_FACTOR);
                     }
                     shouldDrawScene = true;
                 } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -267,9 +262,9 @@ public class Controller3D {
 
     private Camera createCamera() {
         return new Camera()
-                .withPosition(new Vec3D(1.5, -2.5, 1.5))
-                .withAzimuth(Math.toRadians(110)) // - -> look right, + -> look left
-                .withZenith(Math.toRadians(-15)) // - -> look down, + -> look up
+                .withPosition(new Vec3D(Config.CAMERA_INIT_X, Config.CAMERA_INIT_Y, Config.CAMERA_INIT_Z))
+                .withAzimuth(Math.toRadians(Config.CAMERA_INIT_AZIMUTH)) // - -> look right, + -> look left
+                .withZenith(Math.toRadians(Config.CAMERA_INIT_ZENITH)) // - -> look down, + -> look up
                 .withFirstPerson(true);
     }
 
@@ -291,8 +286,8 @@ public class Controller3D {
     }
 
     private void moveCamera(double dx, double dy) {
-        camera = camera.addAzimuth(-dx * cameraRotationSpeed)
-                .addZenith(-dy * cameraRotationSpeed);
+        camera = camera.addAzimuth(-dx * Config.CAMERA_ROTATION_SPEED)
+                .addZenith(-dy * Config.CAMERA_ROTATION_SPEED);
 
         renderer.setView(camera.getViewMatrix());
     }

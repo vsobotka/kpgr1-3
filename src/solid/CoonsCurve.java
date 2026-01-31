@@ -1,5 +1,6 @@
 package solid;
 
+import config.Config;
 import transforms.Cubic;
 import transforms.Mat4;
 import transforms.Point3D;
@@ -23,7 +24,7 @@ public class CoonsCurve extends Solid {
 
         Cubic cubic = new Cubic(Cubic.COONS, p0, p1, p2, p3);
 
-        int segments = 30;
+        int segments = Config.CURVE_SEGMENTS;
         for (int i = 0; i <= segments; i++) {
             double t = (double) i / segments;
             vb.add(cubic.compute(t));

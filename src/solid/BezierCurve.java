@@ -1,5 +1,6 @@
 package solid;
 
+import config.Config;
 import transforms.Cubic;
 import transforms.Mat4;
 import transforms.Point3D;
@@ -24,7 +25,7 @@ public class BezierCurve extends Solid {
 
         Cubic cubic = new Cubic(Cubic.BEZIER, p0, p1, p2, p3);
 
-        int segments = 20;
+        int segments = Config.CURVE_SEGMENTS;
         for (int i = 0; i <= segments; i++) {
             double t = (double) i / segments;
             vb.add(cubic.compute(t));
