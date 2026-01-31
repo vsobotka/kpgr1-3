@@ -40,6 +40,7 @@ public class Controller3D {
 
     private final ArrayList<Solid> solids = new ArrayList<>();
     private final ArrayList<Solid> axes = new ArrayList<>();
+    private final ArrayList<Solid> curves = new ArrayList<>();
     private int selectedSolidIndex = -1;
 
     public Controller3D(Panel panel) {
@@ -99,9 +100,12 @@ public class Controller3D {
         axes.add(new AxisY());
         axes.add(new AxisZ());
 
-        solids.add(new Cube());
+        Cube cube = new Cube();
+        solids.add(cube);
         solids.add(new Dodecahedron());
         solids.add(new PentagonalPrism());
+
+        curves.add(new BezierCurve(cube));
 
         initListeners();
         drawScene();
@@ -220,6 +224,10 @@ public class Controller3D {
 
         for (Solid solid : solids) {
             renderer.renderSolid(solid);
+        }
+
+        for (Solid curve : curves) {
+            renderer.renderSolid(curve);
         }
 
         renderUI();
